@@ -8,7 +8,37 @@ import { motion, AnimatePresence } from "framer-motion";
  */
 
 const STORAGE_KEY_BASE = "roll_recall_v1_progress";
+const LAST_DECK_KEY = "roll_recall_v1_last_deck";
+const LAST_ACTIVITY_KEY = "roll_recall_v1_last_activity";
+const DECK_TIMEOUT_MS = 15 * 60 * 1000; // 15 minutes
+
 const storageKeyForDeck = (deckId) => `${STORAGE_KEY_BASE}:${deckId}`;
+
+function saveLastDeck(deckId) {
+  localStorage.setItem(LAST_DECK_KEY, deckId);
+  localStorage.setItem(LAST_ACTIVITY_KEY, Date.now().toString());
+}
+
+function loadLastDeck() {
+  try {
+    const lastDeck = localStorage.getItem(LAST_DECK_KEY);
+    const lastActivity = localStorage.getItem(LAST_ACTIVITY_KEY);
+    
+    if (!lastDeck || !lastActivity) return "sushi";
+    
+    const timeSinceActivity = Date.now() - parseInt(lastActivity, 10);
+    
+    // If more than 15 minutes, reset to sushi
+    if (timeSinceActivity > DECK_TIMEOUT_MS) {
+      return "sushi";
+    }
+    
+    // Verify deck exists in DECKS config
+    return lastDeck;
+  } catch {
+    return "sushi";
+  }
+}
 
 /** ---------- DATA (from the uploaded doc) ---------- **/
 const ROLLS = [
@@ -367,6 +397,465 @@ const COCKTAILS = [
   },
 ];
 
+const ENTREES = [
+  {
+    id: "burger",
+    name: "Burger",
+    ingredients: [
+      "Dry aged patty",
+      "White American Cheese",
+      "Sesame Bun",
+      "Onion Marmalade",
+      "Chile Toreado Aioli",
+    ],
+  },
+  {
+    id: "red-snapper-chicharron",
+    name: "Red Snapper Chicharrón",
+    ingredients: [
+      "Whole Red Snapper",
+      "Pickled Red Onion",
+      "Lime Vinaigrette",
+      "Encurtidos",
+      "Salsa Cruda",
+      "Habanero Salsa",
+      "Chipotle Mayo",
+      "Frijoles",
+    ],
+  },
+  {
+    id: "pork-short-rib-carnitas",
+    name: "Pork Short Rib Carnitas",
+    ingredients: [
+      "Braised Pork Short Rib",
+      "Orange Chipotle Glaze",
+      "Encurtidos",
+      "Salsa Cruda",
+      "Habanero Salsa",
+      "Frijoles",
+    ],
+  },
+  {
+    id: "chilean-seabass",
+    name: "Chilean Seabass",
+    ingredients: [
+      "6oz Chilean Seabass Filet",
+      "Basmati Rice",
+      "Fennel Lobster Sauce",
+      "Castelvetrano Olives",
+      "Capers",
+      "Tarragon",
+      "Fennel Fronds",
+    ],
+  },
+  {
+    id: "lamb-shank",
+    name: "Lamb Shank",
+    ingredients: [
+      "Braised Lamb Shank",
+      "Red Wine Pomegranate Molasses",
+      "Golden Saffron Rice",
+      "Harissa",
+      "Dukkah",
+      "Pomegranate",
+      "Mint",
+    ],
+  },
+  {
+    id: "spanish-octopus",
+    name: "Spanish Octopus",
+    ingredients: [
+      "Grilled Octopus",
+      "Chorizo & Chickpea Stew",
+      "Herb Marinade",
+      "Zhoug",
+      "Fage Yogurt",
+      "Herb Oil",
+      "Cebollita",
+      "Dill",
+      "Fennel Fronds",
+    ],
+  },
+  {
+    id: "hispi-cabbage",
+    name: "Hispi Cabbage",
+    ingredients: [
+      "Carafax Cabbage",
+      "Matbucha",
+      "Jalapeño Molcajete Salsa",
+      "Parsnip",
+      "Pepitas",
+      "Lemon",
+    ],
+  },
+];
+
+const TACOS = [
+  {
+    id: "baja-shrimp-taco",
+    name: "Baja Shrimp Taco",
+    ingredients: [
+      "Rock shrimp",
+      "Guacamole",
+      "Arbol Chile Salsa",
+      "Mango Pico",
+    ],
+  },
+  {
+    id: "blackened-red-snapper-taco",
+    name: "Blackened Red Snapper Taco",
+    ingredients: [
+      "Red snapper",
+      "Pulla Chile Rub",
+      "Chipotle Mayo",
+      "Pickled Red Onion",
+      "Slaw",
+    ],
+  },
+  {
+    id: "ribeye-taco",
+    name: "Ribeye Taco",
+    ingredients: [
+      "Ribeye",
+      "Oaxaca cheese",
+      "Salsa Negra",
+      "Avocado Salsa Cruda",
+      "Pickled Red Onion",
+      "Cebollita",
+    ],
+  },
+];
+
+const STARTERS = [
+  {
+    id: "scallop-aguachile",
+    name: "Scallop Aguachile",
+    ingredients: [
+      "Hokkaido scallop",
+      "Cilantro-Serrano Broth",
+      "Persian cucumber",
+      "Avocado",
+      "Pickled red onions",
+      "Micro cilantro",
+      "Olive oil",
+    ],
+  },
+  {
+    id: "ahi-tuna-tataki",
+    name: "Ahi Tuna Tataki",
+    ingredients: [
+      "Togarashi seared ahi tuna",
+      "Yuzu Ponzu",
+      "Salsa Matcha",
+      "Navel orange",
+    ],
+  },
+  {
+    id: "red-snapper-ceviche",
+    name: "Red Snapper Ceviche",
+    ingredients: [
+      "Red snapper",
+      "Coconut Lime Sauce",
+      "Mango",
+      "Red onion",
+      "Toasted corn",
+      "Serrano chile",
+      "Chiltepin Oil",
+      "Herb oil",
+    ],
+  },
+  {
+    id: "tai-truffle",
+    name: "Tai Truffle",
+    ingredients: [
+      "Japanese snapper",
+      "Kalamansi vinaigrette",
+      "Crispy garlic",
+      "Red sea salt",
+      "Yuba",
+      "Truffle oil",
+      "Japanese microgreens",
+    ],
+  },
+  {
+    id: "chili-hamachi",
+    name: "Chili Hamachi",
+    ingredients: [
+      "Yellowtail sashimi",
+      "Togarashi",
+      "Yuzu chili",
+      "Smoked trout roe",
+      "Truffle oil",
+      "Fried leeks",
+    ],
+  },
+  {
+    id: "toro-tartare",
+    name: "Toro Tartare",
+    ingredients: [
+      "Toro Tuna",
+      "Wasabi salsa",
+      "Osetra caviar",
+      "Taro chips",
+      "Yuzu soy",
+    ],
+  },
+  {
+    id: "crispy-rice-tuna-salmon",
+    name: "Crispy Rice (Tuna & Salmon)",
+    ingredients: [
+      "Spicy Tuna",
+      "Spicy Salmon",
+      "Shiso Avocado",
+      "Smoked Trout Roe",
+      "Red Tobiko",
+      "Arare",
+      "Scallions",
+    ],
+  },
+  {
+    id: "crispy-rice-beef-tartare",
+    name: "Crispy Rice (Beef Tartare)",
+    ingredients: [
+      "Shiso Avocado",
+      "Jalapeño",
+      "Sesame",
+      "Arare",
+      "Scallions",
+    ],
+  },
+  {
+    id: "beef-cheek-flautitas",
+    name: "Beef Cheek Flautitas",
+    ingredients: [
+      "Braised Beef Cheek",
+      "Queso Fresco",
+      "Serrano",
+      "Radish",
+      "Crema",
+      "Avocado Puree",
+    ],
+  },
+  {
+    id: "chargrilled-oysters",
+    name: "Chargrilled Oysters",
+    ingredients: [
+      "Wilted Spinach",
+      "Garlic Chili Butter",
+      "Parmesan",
+      "Bread Crumbs",
+    ],
+  },
+  {
+    id: "queso-panela",
+    name: "Queso Panela",
+    ingredients: [
+      "Panela Cheese",
+      "Parsley Puree",
+      "Honey-Sherry Vinaigrette",
+      "Castelvetrano Olives",
+      "Roasted Garlic",
+      "Pistachios",
+      "Radish",
+    ],
+  },
+  {
+    id: "mussels",
+    name: "Mussels",
+    ingredients: [
+      "Salsa Chipotle",
+      "Garlic-Fennel Confit",
+      "Cream",
+      "Pimentón",
+    ],
+  },
+  {
+    id: "molotes",
+    name: "Molotes",
+    ingredients: [
+      "Fresh Masa",
+      "Chorizo",
+      "Potato",
+      "Oaxaca cheese",
+      "Enfriolada Sauce",
+      "Jalapeño Salsa",
+      "Crema",
+      "White Onion",
+      "Queso Fresco",
+      "Sesame Seeds",
+    ],
+  },
+  {
+    id: "roasted-cauliflower",
+    name: "Roasted Cauliflower",
+    ingredients: [
+      "Green Tahini",
+      "Pine Nuts",
+      "Parmesan",
+      "Mint",
+      "Lemon Juice",
+      "Leek Ash",
+    ],
+  },
+];
+
+const SALADS_SOUP = [
+  {
+    id: "beet-salad",
+    name: "Beet Salad",
+    ingredients: [
+      "Stracciatella",
+      "Medjool Date Vinaigrette",
+      "Candied Pecans",
+      "Orange segments",
+      "Herb salad",
+      "Herb oil",
+    ],
+  },
+  {
+    id: "mexican-fattoush",
+    name: "Mexican Fattoush",
+    ingredients: [
+      "Pomegranate Sumac Vinaigrette",
+      "Baby romaine",
+      "Mixed baby greens",
+      "Persian cucumber",
+      "Radish",
+      "Campari tomatoes",
+      "Marinated Roasted Peppers",
+      "Spiced Tortilla Chips",
+      "Queso fresco",
+      "Mint",
+      "Pomegranate seeds",
+      "Sumac",
+    ],
+  },
+  {
+    id: "wedge-salad",
+    name: "Wedge Salad",
+    ingredients: [
+      "Baby iceberg",
+      "Charred Oregano Dressing",
+      "Onion rings",
+      "Point Reyes blue cheese",
+      "Heirloom cherry tomatoes",
+      "Avocado",
+      "Candied pepitas",
+      "Corn nuts",
+      "Dill",
+      "Chives",
+    ],
+  },
+  {
+    id: "albondiga-soup",
+    name: "Albóndiga Soup",
+    ingredients: [
+      "Meatballs",
+      "Tomato Broth",
+      "Mire Poix",
+      "Calabaza",
+      "Avocado",
+      "Tostada",
+      "Lime",
+    ],
+  },
+];
+
+const DESSERTS = [
+  {
+    id: "hazelnut-dessert",
+    name: "Hazelnut Dessert",
+    ingredients: [
+      "Pâte à choux",
+      "Diplomat cream",
+      "Praline crunch",
+      "Dulce de leche gelato",
+      "Chantilly",
+      "Chocolate tuile",
+      "Candied hazelnuts",
+      "Chocolate sauce",
+    ],
+  },
+  {
+    id: "chocolate-cake",
+    name: "Chocolate Cake",
+    ingredients: [
+      "Whipped ganache",
+      "Candied popcorn",
+      "Chocolate soil",
+      "Salted bourbon caramel",
+    ],
+  },
+  {
+    id: "tropical-dessert",
+    name: "Tropical Dessert",
+    ingredients: [
+      "Tropical custard disk",
+      "Passionfruit chiboust",
+      "Coconut sorbet",
+      "Toasted coconut anglaise",
+      "Pavlova",
+      "Mango compote",
+      "Lime",
+      "Mint",
+    ],
+  },
+  {
+    id: "gelato",
+    name: "Gelato",
+    ingredients: [
+      "Pistachio",
+      "Dulce De Leche",
+      "Coffee",
+    ],
+  },
+  {
+    id: "sorbet",
+    name: "Sorbet",
+    ingredients: [
+      "Guava Hibiscus",
+      "Coconut Lime",
+      "Pineapple Mint",
+    ],
+  },
+];
+
+const GRILLED_PROTEINS = [
+  { id: "filet", name: "Filet", ingredients: ["Filet"] },
+  { id: "picanha", name: "Picanha", ingredients: ["Picanha"] },
+  { id: "delmonico", name: "Delmonico", ingredients: ["Delmonico"] },
+  { id: "bone-in-strip", name: "Bone-In Strip", ingredients: ["Bone-In Strip"] },
+  { id: "tomahawk", name: "Black Hawk Farms Tomahawk", ingredients: ["Black Hawk Farms Tomahawk"] },
+  { id: "sakura-pork-skirt", name: "Sakura Pork Skirt Steak", ingredients: ["Sakura Pork Skirt Steak"] },
+  { id: "whole-branzino", name: "Whole Branzino", ingredients: ["Whole Branzino"] },
+];
+
+const BRANZINO_SAUCES = [
+  { id: "gochujang-adobo", name: "Gochujang Adobo", ingredients: ["Gochujang Adobo"] },
+  { id: "parsley-puree", name: "Parsley Puree", ingredients: ["Parsley Puree"] },
+];
+
+const STEAK_SAUCES = [
+  { id: "tamarind-steak-sauce", name: "Tamarind Steak Sauce", ingredients: ["Tamarind Steak Sauce"] },
+  { id: "au-poivre", name: "Au Poivre", ingredients: ["Au Poivre"] },
+  { id: "red-wine-butter", name: "Red Wine Butter", ingredients: ["Red Wine Butter"] },
+  { id: "chimichurri", name: "Chimichurri", ingredients: ["Chimichurri"] },
+];
+
+/** ---------- DECKS CONFIGURATION ---------- **/
+const DECKS = {
+  sushi: { name: "🍣 Sushi Rolls", cards: ROLLS },
+  cocktails: { name: "🍸 Cocktails", cards: COCKTAILS },
+  entrees: { name: "🍽️ Entrées", cards: ENTREES },
+  tacos: { name: "🌮 Tacos", cards: TACOS },
+  starters: { name: "🥗 Starters", cards: STARTERS },
+  salads_soup: { name: "🥬 Salads & Soup", cards: SALADS_SOUP },
+  desserts: { name: "🍰 Desserts", cards: DESSERTS },
+  grilled_proteins: { name: "🥩 Grilled Proteins", cards: GRILLED_PROTEINS },
+  branzino_sauces: { name: "🐟 Branzino Sauces", cards: BRANZINO_SAUCES },
+  steak_sauces: { name: "🥃 Steak Sauces", cards: STEAK_SAUCES },
+};
+
 /** ---------- VISUAL CATEGORY TAGGING (for memory cues) ---------- **/
 const CATEGORY_RULES = [
   { cat: "Protein", test: /(tuna|salmon|yellowtail|snow crab|lobster|shrimp|wagyu|negi toro|blue fin)/i },
@@ -601,12 +1090,19 @@ function formatDue(ts) {
 
 /** ---------- APP ---------- **/
 export default function App() {
-  const [deck, setDeck] = useState("sushi"); // "sushi" | "cocktails"
+  const [deck, setDeck] = useState(() => {
+    const savedDeck = loadLastDeck();
+    // Verify deck exists in DECKS config, fallback to sushi
+    return DECKS[savedDeck] ? savedDeck : "sushi";
+  });
   
   // Compute active deck based on current selection
-  const ACTIVE_DECK = useMemo(() => (deck === "sushi" ? ROLLS : COCKTAILS), [deck]);
+  const ACTIVE_DECK = DECKS[deck];
+  const CARDS = ACTIVE_DECK.cards;
   
-  const pantry = useMemo(() => uniquePantry(ACTIVE_DECK), [ACTIVE_DECK]);
+  // Full pantry for reference (used in Lightning mode)
+  const fullPantry = useMemo(() => uniquePantry(CARDS), [CARDS]);
+  
   const [progress, setProgress] = useState(() => loadProgress(storageKeyForDeck("sushi"), ROLLS));
   const [mode, setMode] = useState("recall"); // recall | build | lightning
   const [stage, setStage] = useState("prompt"); // prompt | answer | result
@@ -628,6 +1124,47 @@ export default function App() {
     mastery: 0,
   };
 
+  // Build mode pantry: correct ingredients + 8 decoys
+  const buildPantry = useMemo(() => {
+    if (!current) return [];
+    
+    const correctIngredients = current.ingredients;
+    const correctSet = new Set(correctIngredients.map(normalize));
+    
+    // Get decoy ingredients (not in current card)
+    const decoys = fullPantry
+      .filter(ing => !correctSet.has(normalize(ing)))
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 8); // Take 8 decoys for more challenge
+    
+    // Combine and shuffle
+    const combined = [...correctIngredients, ...decoys];
+    return combined.sort(() => Math.random() - 0.5);
+  }, [current, fullPantry]);
+
+  // Save last active deck and timestamp
+  useEffect(() => {
+    saveLastDeck(deck);
+  }, [deck]);
+
+  // Update activity timestamp on user interactions
+  useEffect(() => {
+    const updateActivity = () => {
+      localStorage.setItem(LAST_ACTIVITY_KEY, Date.now().toString());
+    };
+    
+    // Update on any interaction
+    window.addEventListener('click', updateActivity);
+    window.addEventListener('keydown', updateActivity);
+    window.addEventListener('touchstart', updateActivity);
+    
+    return () => {
+      window.removeEventListener('click', updateActivity);
+      window.removeEventListener('keydown', updateActivity);
+      window.removeEventListener('touchstart', updateActivity);
+    };
+  }, []);
+
   // Save progress when it changes
   useEffect(() => {
     saveProgress(storageKeyForDeck(deck), progress);
@@ -642,7 +1179,13 @@ export default function App() {
     }
 
     try {
-      const cards = deck === "sushi" ? ROLLS : COCKTAILS;
+      const deckData = DECKS[deck];
+      if (!deckData) {
+        console.error('Invalid deck:', deck);
+        return;
+      }
+      
+      const cards = deckData.cards;
       const key = storageKeyForDeck(deck);
       const p = loadProgress(key, cards);
       const nextCard = pickDueRoll(p, cards);
@@ -667,14 +1210,28 @@ export default function App() {
   }, [deck]);
 
   function nextCard() {
-    const next = pickDueRoll(progress, ACTIVE_DECK);
-    setCurrent(next);
-    setStage("prompt");
-    setInput("");
-    setPicked([]);
-    setResult(null);
-    setShowAnswer(false);
-    setShowPreview(false);
+    console.log("nextCard called, current card:", current?.id); // Debug
+    // Filter out the current card to ensure we get a different one
+    const availableCards = CARDS.filter(card => card.id !== current?.id);
+    console.log("Available cards:", availableCards.length); // Debug
+    
+    const next = availableCards.length > 0 
+      ? pickDueRoll(progress, availableCards)
+      : pickDueRoll(progress, CARDS); // Fallback if only one card in deck
+    
+    console.log("Next card:", next); // Debug
+    
+    if (next && next.id !== current?.id) {
+      setCurrent(next);
+      setStage("prompt");
+      setInput("");
+      setPicked([]);
+      setResult(null);
+      setShowAnswer(false);
+      setShowPreview(false);
+    } else {
+      console.warn("Could not find a different card");
+    }
   }
 
   function gradeRecall() {
@@ -764,7 +1321,7 @@ export default function App() {
     const inRoll = current.ingredients;
     
     // pick decoys that don't fuzzy match with correct answers
-    const decoys = pantry
+    const decoys = fullPantry
       .filter(p => {
         const match = findBestMatch(p, truth);
         return !match; // Only include if no fuzzy match found
@@ -780,7 +1337,7 @@ export default function App() {
       item,
       isTrue: !!findBestMatch(item, truth),
     }));
-  }, [current, pantry]); // eslint-disable-line
+  }, [current, fullPantry]); // eslint-disable-line
 
   function resetLightning() {
     setLightIdx(0);
@@ -825,9 +1382,9 @@ export default function App() {
   }
 
   function resetAll() {
-    const fresh = defaultProgress(ACTIVE_DECK);
+    const fresh = defaultProgress(CARDS);
     setProgress(fresh);
-    setCurrent(pickDueRoll(fresh, ACTIVE_DECK));
+    setCurrent(pickDueRoll(fresh, CARDS));
     setStage("prompt");
     setInput("");
     setPicked([]);
@@ -867,11 +1424,25 @@ export default function App() {
     );
   }
 
-  const itemName = deck === "sushi" ? "roll" : "cocktail";
+  // Build mode: calculate correct picks percentage
+  const buildProgress = useMemo(() => {
+    if (mode !== "build" || !current) return 0;
+    
+    const correctIngredients = current.ingredients.map(normalize);
+    const correctSet = new Set(correctIngredients);
+    
+    const correctPicks = picked.filter(ing => correctSet.has(normalize(ing)));
+    const percentage = correctIngredients.length > 0 
+      ? (correctPicks.length / correctIngredients.length) * 100 
+      : 0;
+    
+    return Math.round(percentage);
+  }, [mode, current, picked]);
+
   const headerSubtitle =
     mode === "recall" ? "Type ingredients from memory (best retention)"
-    : mode === "build" ? `Build the ${itemName} from the pantry (great for mobile)`
-    : `Rapid-fire: does it belong in the ${itemName}? (discrimination training)`;
+    : mode === "build" ? "Build the item from the pantry (great for mobile)"
+    : "Rapid-fire: does it belong in this item? (discrimination training)";
 
   return (
     <div className="min-h-screen text-white">
@@ -920,32 +1491,29 @@ export default function App() {
         </div>
 
         {/* Deck Selection */}
-        <div className="mt-6 flex flex-wrap gap-2 items-center">
-          <button
-            onClick={() => setDeck("sushi")}
-            className={[
-              "px-4 py-2 rounded-2xl border transition-all text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-white/50",
-              deck === "sushi"
-                ? "bg-white text-zinc-950 border-white"
-                : "bg-white/10 border-white/15 hover:bg-white/20",
-            ].join(" ")}
-          >
-            🍣 Sushi Rolls
-          </button>
+        <div className="mt-6 flex flex-wrap gap-3 items-center">
+          <div className="flex items-center gap-2">
+            <label htmlFor="deck-select" className="text-sm text-white/70">
+              Deck:
+            </label>
+            <select
+              id="deck-select"
+              value={deck}
+              onChange={(e) => setDeck(e.target.value)}
+              className="px-4 py-2 rounded-xl bg-white/10 border border-white/15 hover:bg-white/20 focus:bg-white/15 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all text-sm font-medium cursor-pointer"
+            >
+              {Object.entries(DECKS).map(([id, deckData]) => (
+                <option key={id} value={id} className="bg-zinc-900 text-white">
+                  {deckData.name}
+                </option>
+              ))}
+            </select>
+            <div className="text-xs text-white/50">
+              ({CARDS.length} cards)
+            </div>
+          </div>
 
-          <button
-            onClick={() => setDeck("cocktails")}
-            className={[
-              "px-4 py-2 rounded-2xl border transition-all text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-white/50",
-              deck === "cocktails"
-                ? "bg-white text-zinc-950 border-white"
-                : "bg-white/10 border-white/15 hover:bg-white/20",
-            ].join(" ")}
-          >
-            🍸 Cocktails
-          </button>
-
-          <div className="text-sm text-white/50 px-2">|</div>
+          <div className="text-sm text-white/50 px-1">|</div>
         </div>
 
         {/* Mode Switch */}
@@ -988,10 +1556,15 @@ export default function App() {
                 </div>
 
                 <button
-                  onClick={nextCard}
-                  className="px-3 py-2 rounded-xl bg-white/10 border border-white/15 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all text-sm whitespace-nowrap"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    nextCard();
+                  }}
+                  className="px-3 py-2 rounded-xl bg-white/10 border border-white/15 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all text-sm whitespace-nowrap cursor-pointer"
+                  title="Skip to next card without grading"
                 >
-                  Next
+                  Skip →
                 </button>
               </div>
 
@@ -1086,6 +1659,63 @@ export default function App() {
                         Tap ingredients to add/remove. Aim for complete accuracy.
                       </div>
 
+                      {/* Progress Meter */}
+                      <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="text-xs uppercase tracking-widest text-white/60">
+                            Progress
+                          </div>
+                          <div className="text-sm font-semibold text-white">
+                            {buildProgress}%
+                          </div>
+                        </div>
+                        <div className="relative h-3 rounded-full bg-white/10 overflow-hidden">
+                          {/* Neon glow background */}
+                          <motion.div
+                            className="absolute inset-0 rounded-full"
+                            style={{
+                              background: buildProgress === 100 
+                                ? 'linear-gradient(90deg, rgba(16,185,129,0.3), rgba(5,150,105,0.3))'
+                                : 'linear-gradient(90deg, rgba(99,102,241,0.3), rgba(79,70,229,0.3))',
+                              filter: 'blur(8px)',
+                              opacity: buildProgress > 0 ? 1 : 0,
+                            }}
+                            animate={{ opacity: buildProgress > 0 ? 1 : 0 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                          {/* Progress fill with neon effect */}
+                          <motion.div
+                            className="relative h-full rounded-full"
+                            style={{
+                              background: buildProgress === 100
+                                ? 'linear-gradient(90deg, #10b981, #059669)'
+                                : 'linear-gradient(90deg, #6366f1, #4f46e5)',
+                              boxShadow: buildProgress === 100
+                                ? '0 0 20px rgba(16,185,129,0.8), 0 0 40px rgba(16,185,129,0.4)'
+                                : '0 0 20px rgba(99,102,241,0.8), 0 0 40px rgba(99,102,241,0.4)',
+                            }}
+                            initial={{ width: 0 }}
+                            animate={{ 
+                              width: `${buildProgress}%`,
+                              scale: buildProgress === 100 ? [1, 1.02, 1] : 1,
+                            }}
+                            transition={{ 
+                              width: { duration: 0.5, ease: "easeOut" },
+                              scale: { duration: 0.6, repeat: buildProgress === 100 ? Infinity : 0, repeatDelay: 0.4 }
+                            }}
+                          />
+                        </div>
+                        {buildProgress === 100 && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-2 text-xs text-emerald-400 font-medium text-center"
+                          >
+                            ✓ All correct ingredients selected!
+                          </motion.div>
+                        )}
+                      </div>
+
                       <div className="rounded-2xl bg-white/5 border border-white/10 p-3">
                         <div className="text-xs uppercase tracking-widest text-white/60 px-1">
                           Your Build ({picked.length})
@@ -1112,10 +1742,10 @@ export default function App() {
 
                       <div className="rounded-2xl bg-zinc-950/25 border border-white/10 p-3 max-h-[240px] overflow-auto scrollbar-custom">
                         <div className="text-xs uppercase tracking-widest text-white/60 px-1">
-                          Pantry
+                          Pantry ({buildPantry.length} items)
                         </div>
                         <div className="mt-2 flex flex-wrap gap-2">
-                          {pantry.map((ing) => {
+                          {buildPantry.map((ing) => {
                             const active = picked.includes(ing);
                             return (
                               <button
@@ -1308,7 +1938,7 @@ export default function App() {
               </div>
 
               <div className="mt-4 space-y-2 max-h-[360px] overflow-auto pr-1 scrollbar-custom">
-                {ACTIVE_DECK
+                {CARDS
                   .slice()
                   .sort((a, b) => {
                     const aDue = progress[a.id]?.dueAt ?? Date.now();
@@ -1447,14 +2077,15 @@ export default function App() {
                 </section>
 
                 <section>
-                  <h3 className="text-lg font-semibold mb-2">Dual Deck System</h3>
+                  <h3 className="text-lg font-semibold mb-2">Multi-Deck System</h3>
                   <p className="text-sm text-white/70 mb-2">
-                    Switch between two decks: 🍣 Sushi Rolls (15 cards) and 🍸 Cocktails (20 cards).
+                    Choose from 10 different decks covering the full menu: Sushi Rolls, Cocktails, Entrées, Tacos, Starters, Salads & Soup, Desserts, Grilled Proteins, Branzino Sauces, and Steak Sauces.
                   </p>
                   <ul className="space-y-2 text-sm text-white/70 list-disc pl-5">
                     <li><strong className="text-white">Separate Progress:</strong> Each deck has its own progress, queue, and mastery tracking</li>
-                    <li><strong className="text-white">Same Modes:</strong> All three training modes work with both decks</li>
+                    <li><strong className="text-white">Same Modes:</strong> All three training modes work with every deck</li>
                     <li><strong className="text-white">Auto-Save:</strong> Progress for each deck is saved independently</li>
+                    <li><strong className="text-white">Switch Anytime:</strong> Use the dropdown to switch between decks</li>
                   </ul>
                 </section>
 

@@ -1,17 +1,29 @@
-# Roll Recall 🍣🍸
+# Roll Recall 🍣🍸🍽️
 
-A polished, production-ready React webapp for mastering sushi roll & cocktail ingredients using spaced repetition, active recall, and interleaving techniques.
+A polished, production-ready React webapp for mastering restaurant menu items using spaced repetition, active recall, and interleaving techniques.
 
-## Dual Deck System
+## Multi-Deck System
 
-Train on two separate decks with independent progress tracking:
-- **🍣 Sushi Rolls**: 15 rolls from the restaurant menu
-- **🍸 Cocktails**: 20 cocktails from the bar menu
+Train on **10 separate decks** covering the entire menu with independent progress tracking:
+
+- **🍣 Sushi Rolls**: 15 signature rolls
+- **🍸 Cocktails**: 20 craft cocktails
+- **🍽️ Entrées**: 7 main courses
+- **🌮 Tacos**: 3 taco varieties
+- **🥗 Starters**: 14 appetizers
+- **🥬 Salads & Soup**: 4 fresh options
+- **🍰 Desserts**: 5 sweet endings
+- **🥩 Grilled Proteins**: 7 premium cuts
+- **🐟 Branzino Sauces**: 2 fish preparations
+- **🥃 Steak Sauces**: 4 classic accompaniments
+
+**Total: 81 menu items to master!**
 
 Each deck maintains its own:
 - Progress tracking and mastery scores
 - Due dates and spaced repetition schedule
 - Separate localStorage persistence
+- Independent reset capability
 
 ## Features
 
@@ -135,7 +147,7 @@ This makes practicing more forgiving and realistic—you don't need to remember 
 ✅ Moved subtitle to separate line on mobile for readability
 
 ### New Features
-✅ **Dual Deck System**: Switch between Sushi Rolls (15) and Cocktails (20) with independent progress  
+✅ **Multi-Deck System**: 10 decks covering the full menu (81 total items) with independent progress  
 ✅ **Fuzzy Matching System**: Accepts close-enough answers (e.g., "daikon" matches "pickled daikon")  
 ✅ **Hidden Preview by Default**: Ingredients are blurred until you click "Show Preview" - prevents cheating!  
 ✅ **Help Modal**: Comprehensive guide explaining all modes, spaced repetition, and tips  
@@ -210,6 +222,76 @@ All 20 cocktails are included with exact ingredient lists:
 19. N/A Fuego Fresh
 20. N/A Pandanito
 
+### Entrées Deck
+7 main courses with complete ingredient lists:
+1. Burger
+2. Red Snapper Chicharrón
+3. Pork Short Rib Carnitas
+4. Chilean Seabass
+5. Lamb Shank
+6. Spanish Octopus
+7. Hispi Cabbage
+
+### Tacos Deck
+3 taco varieties:
+1. Baja Shrimp Taco
+2. Blackened Red Snapper Taco
+3. Ribeye Taco
+
+### Starters Deck
+14 appetizers with full ingredient lists:
+1. Scallop Aguachile
+2. Ahi Tuna Tataki
+3. Red Snapper Ceviche
+4. Tai Truffle
+5. Chili Hamachi
+6. Toro Tartare
+7. Crispy Rice (Tuna & Salmon)
+8. Crispy Rice (Beef Tartare)
+9. Beef Cheek Flautitas
+10. Chargrilled Oysters
+11. Queso Panela
+12. Mussels
+13. Molotes
+14. Roasted Cauliflower
+
+### Salads & Soup Deck
+4 fresh options:
+1. Beet Salad
+2. Mexican Fattoush
+3. Wedge Salad
+4. Albóndiga Soup
+
+### Desserts Deck
+5 sweet endings:
+1. Hazelnut Dessert
+2. Chocolate Cake
+3. Tropical Dessert
+4. Gelato (3 flavors)
+5. Sorbet (3 flavors)
+
+### Grilled Proteins Deck
+7 premium cuts:
+1. Filet
+2. Picanha
+3. Delmonico
+4. Bone-In Strip
+5. Black Hawk Farms Tomahawk
+6. Sakura Pork Skirt Steak
+7. Whole Branzino
+
+### Branzino Sauces Deck
+2 fish preparations:
+1. Gochujang Adobo
+2. Parsley Puree
+
+### Steak Sauces Deck
+4 classic accompaniments:
+1. Tamarind Steak Sauce
+2. Au Poivre
+3. Red Wine Butter
+4. Chimichurri
+
 ## Browser Support
 
 - Chrome/Edge (latest)
@@ -226,6 +308,7 @@ Private training tool - all rights reserved.
 **Data Sources**: 
 - Sushi_Rolls_Ingredients_All_15.docx
 - Cocktail_Menu_Master_Document
+- Restaurant Menu (Entrées, Tacos, Starters, Salads & Soup, Desserts, Grilled Items)
 
-**Enjoy mastering your sushi rolls & cocktails!** 🍣🍸✨
+**Enjoy mastering the entire menu - 81 items across 10 decks!** 🍣🍸🍽️✨
 
